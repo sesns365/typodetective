@@ -57,7 +57,7 @@ h1{margin:0;font-size:clamp(2.2rem,5vw,3.8rem);line-height:1.15;letter-spacing:.
 .search{width:100%;min-height:50px;padding:0 14px;border:2px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);font-size:1.1rem}
 .chip:focus-visible,.search:focus-visible,.ver:focus-visible,.zy-toggle:focus-visible,.btn:focus-visible{outline:3px solid rgba(25,138,134,.35);outline-offset:2px}
 
-.summary{margin:22px 4px 10px;color:var(--muted);font-weight:700;font-size:1.05rem}
+.summary{display:flex;align-items:center;gap:10px;margin:26px 4px 12px;color:var(--muted);font-weight:800;font-size:1.15rem}.summary small{font-size:.9rem;font-weight:700;opacity:.8}
 .groups{display:grid;gap:18px}
 .group{padding:16px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.9)}
 .group-title{display:flex;align-items:baseline;gap:12px;margin:0 0 14px;font-size:1.5rem}
@@ -135,6 +135,9 @@ footer a{color:var(--brand-dark);font-weight:800}
 }
 .vtag{display:inline-block;margin-right:.5em;padding:.1em .6em;border-radius:999px;background:var(--vc);color:#fff;font-size:.8em;vertical-align:middle}
 body.searching #versions,body.searching #grades{opacity:.45}
+.search-panel{margin-bottom:16px}
+.search-ico{width:26px;height:26px;fill:none;stroke:var(--brand);stroke-width:2.6;stroke-linecap:round}
+.search-panel .search{min-height:56px;font-size:1.2rem}
 </style>
 </head>
 <body>
@@ -156,20 +159,19 @@ body.searching #versions,body.searching #grades{opacity:.45}
   </nav>
   <p class="ws-hint" id="wsHint" data-t="勾選要列印的課文，再按下方的「下載學習單」。勾選兩課以上會打包成一個壓縮檔。"></p>
 
+  <section class="panel search-panel" aria-label="找課文">
+    <label class="step-label" for="search"><svg class="search-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4.2-4.2"/></svg><span data-t="找課文"></span></label>
+    <input class="search" id="search" type="search" autocomplete="off" placeholder="輸入課名，搜尋全部版本與年級">
+  </section>
+
   <section class="panel" aria-label="選版本">
     <p class="step-label"><span class="step-no">1</span><span data-t="選版本"></span></p>
     <div class="versions" id="versions"></div>
   </section>
 
-  <section class="row2">
-    <div class="panel">
-      <p class="step-label"><span class="step-no">2</span><span data-t="選年級"></span></p>
-      <div class="chips" id="grades"></div>
-    </div>
-    <div class="panel">
-      <label class="step-label" for="search"><span class="step-no">3</span><span data-t="找課文"></span></label>
-      <input class="search" id="search" type="search" autocomplete="off" placeholder="輸入課名">
-    </div>
+  <section class="panel" aria-label="選年級" style="margin-top:16px">
+    <p class="step-label"><span class="step-no">2</span><span data-t="選年級"></span></p>
+    <div class="chips" id="grades"></div>
   </section>
 
   <p class="summary" id="summary" aria-live="polite"></p>
@@ -268,7 +270,7 @@ function renderLessons(){
       : LESSONS.filter(x=>x.version===state.v).filter(x=>state.g==="全部"||x.grade===state.g))
     .sort((a,b)=>VORDER.indexOf(a.version)-VORDER.indexOf(b.version)||GRADES.indexOf(a.grade)-GRADES.indexOf(b.grade)||lessonNo(a)-lessonNo(b));
   document.body.classList.toggle("searching", !!q);
-  document.getElementById("summary").innerHTML = q ? T("搜尋全部版本與年級") : T(state.v+"版");
+  document.getElementById("summary").innerHTML = '<span class="step-no">3</span><span>'+T("選課次")+'</span><small>'+(q ? T("搜尋全部版本與年級") : T(state.v+"版")+(state.g==="全部"?"":" "+T(GRADE_NAME[state.g])))+'</small>';
   const box = document.getElementById("groups");
   if(!list.length){ box.innerHTML = '<div class="empty">'+T("找不到符合的課文")+'</div>'; state.visible = []; renderBar(); return; }
   const byGrade = new Map();
